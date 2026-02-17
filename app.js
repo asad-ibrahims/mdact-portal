@@ -2,8 +2,9 @@
   MDCAT Portal - Premium Dashboard
   - Supabase REST (no libraries)
   - GitHub Pages compatible
-  - 6 Dark themes
+  - 6 Dark themes (dark only)
   - No-scroll quiz start (collapses setup)
+  - NEW: No repeated MCQs once attempted (localStorage)
 */
 
 const SUPABASE_URL = "https://achaxseflfysltezynem.supabase.co/";
@@ -64,6 +65,9 @@ function cycleTheme(){
 const LS_ATTEMPTS = "mdcat_attempts_v2";
 const LS_LAST_FILTERS = "mdcat_last_filters_v2";
 
+/* NEW: attempted MCQ IDs store */
+const LS_ATTEMPTED_IDS = "mdcat_attempted_ids_v1";
+
 function loadAttempts(){
   try { return JSON.parse(localStorage.getItem(LS_ATTEMPTS) || "[]"); }
   catch { return []; }
@@ -82,6 +86,22 @@ function saveLastFilters(filters){
 function loadLastFilters(){
   try { return JSON.parse(localStorage.getItem(LS_LAST_FILTERS) || "null"); }
   catch { return null; }
+}
+
+/* Attempted IDs helpers */
+function loadAttemptedSet(){
+  try{
+    const arr = JSON.parse(localStorage.getItem(LS_ATTEMPTED_IDS) || "[]");
+    return new Set(arr);
+  }catch{
+    return new Set();
+  }
+}
+
+function saveAttemptedSet(set){
+  // keep max 50k ids for safety
+  const arr = Array.from(set).slice(0, 50000);
+  localStorage.setItem(LS_ATTEMPTED_IDS, JSON.stringify(arr));
 }
 
 /* ------------------ Supabase REST ------------------ */
@@ -118,7 +138,13 @@ async function fetchMCQs(filters){
     path += `&difficulty=eq.${encodeURIComponent(filters.difficulty)}`;
   }
 
-  path += `&limit=${filters.limit}`;
+  // IMPORTANT:
+  // We fetch MORE than needed so we can filter attempted IDs locally.
+  // Otherwise you may get "no questions" too early.
+  const requested = filters.limit;
+  const fetchLimit = clamp(requested * 6, 60, 400); // smart buffer
+  path += `&limit=${fetchLimit}`;
+
   return await supabaseFetch(path);
 }
 
@@ -224,7 +250,6 @@ function refreshDashboard(){
 
 /* ------------------ Quiz Rendering ------------------ */
 function collapsePracticeTop(){
-  // This is the main fix: no scroll frustration
   document.body.classList.add("practiceCollapsed");
 }
 
@@ -286,6 +311,11 @@ function handleAnswer(selected){
 
   const isCorrect = selected === correct;
   if(isCorrect) quiz.score++;
+
+  // Mark as attempted immediately
+  const attempted = loadAttemptedSet();
+  attempted.add(q.id);
+  saveAttemptedSet(attempted);
 
   document.querySelectorAll(".opt").forEach(btn => {
     const opt = btn.dataset.opt;
@@ -367,9 +397,20 @@ async function startQuizFromFilters(filters){
       return;
     }
 
+    // Remove already attempted questions
+    const attempted = loadAttemptedSet();
+    const fresh = items.filter(q => !attempted.has(q.id));
+
+    // If fresh not enough, fallback to mixed
+    // (Otherwise user gets stuck forever)
+    const pool = fresh.length >= filters.limit ? fresh : items;
+
+    // Shuffle and pick exactly limit
+    const picked = shuffle(pool).slice(0, filters.limit);
+
     quiz.filters = filters;
     quiz.mode = filters.mode;
-    quiz.items = shuffle(items).slice(0, filters.limit);
+    quiz.items = picked;
     quiz.index = 0;
     quiz.score = 0;
 
@@ -386,7 +427,13 @@ async function startQuizFromFilters(filters){
 
     renderQuestion();
 
-    toast("Quiz loaded from Supabase.");
+    // Inform user about fresh count
+    if(fresh.length < filters.limit){
+      toast(`Only ${fresh.length} fresh MCQs found. Mixed pool used.`);
+    } else {
+      toast("Fresh MCQs loaded (no repeats).");
+    }
+
     saveLastFilters(filters);
 
   }catch(err){
@@ -447,7 +494,7 @@ function refreshAnalytics(){
 /* ------------------ Events ------------------ */
 document.querySelectorAll(".navItem").forEach(btn => {
   btn.addEventListener("click", () => {
-    expandPracticeTop(); // when switching tabs, show setup again
+    expandPracticeTop();
     setView(btn.dataset.view);
   });
 });
@@ -540,6 +587,7 @@ $("backBtn").addEventListener("click", () => {
 /* ------------------ Init ------------------ */
 (async function init(){
   loadTheme();
+
   $("dbCount").textContent = "Loading...";
   $("dbCount").textContent = await fetchDBCount();
 
