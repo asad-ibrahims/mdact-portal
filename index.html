@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MDCAT MCQs Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <h1>MDCAT MCQs Portal</h1>
+    <p>Practice topic-wise MCQs (Supabase Live Database)</p>
+  </header>
+
+  <main class="container">
+
+    <section class="controls">
+      <label>
+        Subject:
+        <select id="subjectSelect">
+          <option value="Biology">Biology</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Physics">Physics</option>
+          <option value="English">English</option>
+        </select>
+      </label>
+
+      <label>
+        Chapter:
+        <input id="chapterInput" placeholder="e.g. Homeostasis" />
+      </label>
+
+      <label>
+        Topic:
+        <input id="topicInput" placeholder="e.g. Osmoregulation" />
+      </label>
+
+      <label>
+        Difficulty:
+        <select id="difficultySelect">
+          <option value="">All</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </label>
+
+      <label>
+        Questions:
+        <input id="limitInput" type="number" value="10" min="5" max="50" />
+      </label>
+
+      <button id="startBtn">Start Quiz</button>
+    </section>
+
+    <section id="quizArea" class="quiz hidden">
+      <div class="quizHeader">
+        <h2 id="quizTitle">Quiz</h2>
+        <div class="quizMeta">
+          <span id="qCounter">Q 1/10</span>
+          <span id="scoreCounter">Score: 0</span>
+        </div>
+      </div>
+
+      <div class="questionBox">
+        <p id="questionText"></p>
+
+        <div class="options">
+          <button class="opt" data-opt="A" id="optA"></button>
+          <button class="opt" data-opt="B" id="optB"></button>
+          <button class="opt" data-opt="C" id="optC"></button>
+          <button class="opt" data-opt="D" id="optD"></button>
+        </div>
+
+        <div id="explanationBox" class="explain hidden"></div>
+
+        <div class="actions">
+          <button id="nextBtn" class="secondary">Next</button>
+          <button id="finishBtn" class="danger">Finish</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultArea" class="result hidden">
+      <h2>Result</h2>
+      <p id="finalScore"></p>
+      <button onclick="location.reload()">Start New Quiz</button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
