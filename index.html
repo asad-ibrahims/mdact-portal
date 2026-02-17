@@ -2,93 +2,399 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MDCAT MCQs Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MDCAT Mastery | Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-  <header class="topbar">
-    <h1>MDCAT MCQs Portal</h1>
-    <p>Practice topic-wise MCQs (Supabase Live Database)</p>
-  </header>
+  <!-- Background -->
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="grain"></div>
+  </div>
 
-  <main class="container">
+  <div class="app">
 
-    <section class="controls">
-      <label>
-        Subject:
-        <select id="subjectSelect">
-          <option value="Biology">Biology</option>
-          <option value="Chemistry">Chemistry</option>
-          <option value="Physics">Physics</option>
-          <option value="English">English</option>
-        </select>
-      </label>
-
-      <label>
-        Chapter:
-        <input id="chapterInput" placeholder="e.g. Homeostasis" />
-      </label>
-
-      <label>
-        Topic:
-        <input id="topicInput" placeholder="e.g. Osmoregulation" />
-      </label>
-
-      <label>
-        Difficulty:
-        <select id="difficultySelect">
-          <option value="">All</option>
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
-      </label>
-
-      <label>
-        Questions:
-        <input id="limitInput" type="number" value="10" min="5" max="50" />
-      </label>
-
-      <button id="startBtn">Start Quiz</button>
-    </section>
-
-    <section id="quizArea" class="quiz hidden">
-      <div class="quizHeader">
-        <h2 id="quizTitle">Quiz</h2>
-        <div class="quizMeta">
-          <span id="qCounter">Q 1/10</span>
-          <span id="scoreCounter">Score: 0</span>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">M</div>
+        <div>
+          <div class="brandTitle">MDCAT Mastery</div>
+          <div class="brandSub">Supabase Live MCQs</div>
         </div>
       </div>
 
-      <div class="questionBox">
-        <p id="questionText"></p>
+      <nav class="nav">
+        <button class="navItem active" data-view="dashboard"><span class="navIcon">📊</span>Dashboard</button>
+        <button class="navItem" data-view="practice"><span class="navIcon">🧠</span>Practice</button>
+        <button class="navItem" data-view="pastpapers"><span class="navIcon">🗂️</span>Past Papers</button>
+        <button class="navItem" data-view="analytics"><span class="navIcon">📈</span>Analytics</button>
+        <button class="navItem" data-view="settings"><span class="navIcon">⚙️</span>Settings</button>
+      </nav>
 
-        <div class="options">
-          <button class="opt" data-opt="A" id="optA"></button>
-          <button class="opt" data-opt="B" id="optB"></button>
-          <button class="opt" data-opt="C" id="optC"></button>
-          <button class="opt" data-opt="D" id="optD"></button>
+      <div class="sidebarFooter">
+        <div class="pill">
+          <span class="dot"></span>
+          <span>Free build • GitHub Pages</span>
         </div>
 
-        <div id="explanationBox" class="explain hidden"></div>
-
-        <div class="actions">
-          <button id="nextBtn" class="secondary">Next</button>
-          <button id="finishBtn" class="danger">Finish</button>
+        <div class="mini">
+          <div class="miniTitle">Quick Tip</div>
+          <div class="miniText">
+            Start with <b>Biology</b> and do <b>10 MCQs</b>. Small wins beat burnout.
+          </div>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <section id="resultArea" class="result hidden">
-      <h2>Result</h2>
-      <p id="finalScore"></p>
-      <button onclick="location.reload()">Start New Quiz</button>
-    </section>
+    <!-- Main -->
+    <main class="main">
 
-  </main>
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="iconBtn" id="menuBtn" title="Menu">☰</button>
+
+        <div class="topTitle">
+          <div class="topKicker">Welcome back</div>
+          <div class="topHeadline" id="headline">Dashboard</div>
+        </div>
+
+        <div class="topActions">
+          <!-- Dark themes only -->
+          <button class="ghost" id="themeBtn">🎨 Theme</button>
+          <button class="primary" id="quickStartBtn">Start 10 MCQs</button>
+        </div>
+      </header>
+
+      <!-- Views -->
+      <section class="views">
+
+        <!-- Dashboard -->
+        <div class="view" id="view-dashboard">
+          <div class="grid2">
+            <div class="card hero">
+              <div class="heroLeft">
+                <div class="badge">⚡ Premium UI (Free)</div>
+                <h2>Practice smarter. Not harder.</h2>
+                <p>
+                  This portal loads MCQs from your <b>Supabase database</b>.
+                  Progress is stored locally for now (zero investment).
+                </p>
+
+                <div class="heroActions">
+                  <button class="primary" id="dashStartBtn">Start Practice</button>
+                  <button class="ghost" id="dashDemoBtn">Load Demo Topic</button>
+                </div>
+              </div>
+
+              <div class="heroRight">
+                <div class="metric">
+                  <div class="metricLabel">Total MCQs (sample)</div>
+                  <div class="metricValue" id="dbCount">—</div>
+                </div>
+                <div class="metric">
+                  <div class="metricLabel">Local Attempts</div>
+                  <div class="metricValue" id="attemptCount">0</div>
+                </div>
+                <div class="metric">
+                  <div class="metricLabel">Last Score</div>
+                  <div class="metricValue" id="lastScore">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Today’s Plan</div>
+
+              <div class="plan">
+                <div class="planItem">
+                  <div class="planIcon">🧬</div>
+                  <div>
+                    <div class="planTitle">Biology</div>
+                    <div class="planSub">10 MCQs (Cell + Genetics)</div>
+                  </div>
+                  <button class="chip" data-quick="Biology">Start</button>
+                </div>
+
+                <div class="planItem">
+                  <div class="planIcon">⚗️</div>
+                  <div>
+                    <div class="planTitle">Chemistry</div>
+                    <div class="planSub">10 MCQs (Organic basics)</div>
+                  </div>
+                  <button class="chip" data-quick="Chemistry">Start</button>
+                </div>
+
+                <div class="planItem">
+                  <div class="planIcon">⚡</div>
+                  <div>
+                    <div class="planTitle">Physics</div>
+                    <div class="planSub">10 MCQs (Motion + Units)</div>
+                  </div>
+                  <button class="chip" data-quick="Physics">Start</button>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="cardTitle">Recent Activity</div>
+              <div class="activity" id="activityList">
+                <div class="muted">No attempts yet. Start a quiz and your history appears here.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid3">
+            <div class="card">
+              <div class="cardTitle">Accuracy (local)</div>
+              <div class="big" id="accValue">—</div>
+              <div class="progress">
+                <div class="bar" id="accBar" style="width:0%"></div>
+              </div>
+              <div class="muted">Based on quizzes attempted on this device.</div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Streak (local)</div>
+              <div class="big" id="streakValue">0 days</div>
+              <div class="muted">1 quiz per day keeps regret away.</div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Weak Areas</div>
+              <div class="tags" id="weakTags">
+                <span class="tag">Not enough data</span>
+              </div>
+              <div class="muted">After 5+ quizzes, weak topics appear here.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Practice -->
+        <div class="view hidden" id="view-practice">
+
+          <div class="grid2" id="practiceTopGrid">
+
+            <div class="card" id="practiceSetupCard">
+              <div class="cardTitle">Practice Setup</div>
+
+              <div class="form">
+                <div class="field">
+                  <label>Subject</label>
+                  <select id="subjectSelect">
+                    <option value="Biology">Biology</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Physics">Physics</option>
+                    <option value="English">English</option>
+                    <option value="Logical Reasoning">Logical Reasoning</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Chapter (optional)</label>
+                  <input id="chapterInput" placeholder="e.g. Homeostasis" />
+                </div>
+
+                <div class="field">
+                  <label>Topic (optional)</label>
+                  <input id="topicInput" placeholder="e.g. Osmoregulation" />
+                </div>
+
+                <div class="field">
+                  <label>Difficulty</label>
+                  <select id="difficultySelect">
+                    <option value="">All</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Number of MCQs</label>
+                  <input id="limitInput" type="number" value="10" min="5" max="50" />
+                </div>
+
+                <div class="field">
+                  <label>Mode</label>
+                  <select id="modeSelect">
+                    <option value="learn">Learn Mode (show explanation)</option>
+                    <option value="exam">Exam Mode (explanation after finish)</option>
+                  </select>
+                </div>
+
+                <button class="primary" id="startBtn">Start Quiz</button>
+                <div class="muted" id="statusText">
+                  Tip: Leave chapter/topic empty to get random MCQs from that subject.
+                </div>
+              </div>
+            </div>
+
+            <div class="card" id="practiceInfoCard">
+              <div class="cardTitle">How this works</div>
+              <div class="muted">
+                <ul class="list">
+                  <li>MCQs are fetched live from your Supabase database.</li>
+                  <li>Filters use <b>subject</b>, and optional <b>chapter/topic</b>.</li>
+                  <li>Progress is stored in localStorage (free build).</li>
+                  <li>Next step later: login + online progress (still free).</li>
+                </ul>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="cardTitle">Pro Tip</div>
+              <div class="quote">
+                <div class="quoteIcon">“</div>
+                <div>Don’t chase 10,000 MCQs in one week. Do <b>100 daily</b> and you’ll beat most students.</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quiz (appears without needing scroll) -->
+          <div class="card hidden" id="quizArea">
+            <div class="quizTop">
+              <div>
+                <div class="badge" id="quizBadge">Practice</div>
+                <div class="quizTitle" id="quizTitle">Quiz</div>
+                <div class="muted" id="quizMeta">—</div>
+              </div>
+
+              <div class="quizRight">
+                <div class="pill">
+                  <span class="dot"></span>
+                  <span id="qCounter">Q 1/10</span>
+                </div>
+                <div class="pill">
+                  <span>⭐</span>
+                  <span id="scoreCounter">Score: 0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="qBox">
+              <div class="qText" id="questionText">—</div>
+
+              <div class="options">
+                <button class="opt" data-opt="A" id="optA"></button>
+                <button class="opt" data-opt="B" id="optB"></button>
+                <button class="opt" data-opt="C" id="optC"></button>
+                <button class="opt" data-opt="D" id="optD"></button>
+              </div>
+
+              <div class="explain hidden" id="explanationBox"></div>
+
+              <div class="quizActions">
+                <button class="ghost" id="prevBtn">← Previous</button>
+                <button class="ghost" id="skipBtn">Skip</button>
+                <button class="primary" id="nextBtn">Next →</button>
+                <button class="danger" id="finishBtn">Finish</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="card hidden" id="resultArea">
+            <div class="cardTitle">Result</div>
+            <div class="big" id="finalScore">—</div>
+            <div class="muted" id="resultMeta">—</div>
+
+            <div class="divider"></div>
+
+            <div class="quizActions">
+              <button class="primary" id="retryBtn">Retry Same Filters</button>
+              <button class="ghost" id="backBtn">Back to Practice</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Past Papers -->
+        <div class="view hidden" id="view-pastpapers">
+          <div class="card">
+            <div class="cardTitle">Past Papers (Demo)</div>
+            <div class="muted">UI-ready. Later you’ll map each year to a Supabase table.</div>
+
+            <div class="papers">
+              <button class="paper">MDCAT 2020</button>
+              <button class="paper">MDCAT 2021</button>
+              <button class="paper">MDCAT 2022</button>
+              <button class="paper">MDCAT 2023</button>
+              <button class="paper">MDCAT 2024</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="view hidden" id="view-analytics">
+          <div class="grid2">
+            <div class="card">
+              <div class="cardTitle">Performance (local)</div>
+              <div class="muted">Simple bars. No libraries. Still looks premium.</div>
+              <div class="divider"></div>
+              <div class="bars" id="barsArea"></div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Attempt History</div>
+              <div class="muted">Last 10 attempts on this device.</div>
+              <div class="divider"></div>
+              <div class="history" id="historyList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="view hidden" id="view-settings">
+          <div class="grid2">
+            <div class="card">
+              <div class="cardTitle">Supabase Connection</div>
+              <div class="muted">
+                Set your <b>SUPABASE_URL</b> and <b>SUPABASE_ANON_KEY</b> in <code>app.js</code>.
+              </div>
+              <div class="divider"></div>
+
+              <div class="muted">
+                <ul class="list">
+                  <li>Supabase → Project Settings → API</li>
+                  <li>Use anon public key</li>
+                  <li>Keep policy: Public SELECT only</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">Theme System</div>
+              <div class="muted">
+                Theme button cycles through <b>6 dark themes</b>. Saved in localStorage.
+              </div>
+              <div class="divider"></div>
+              <div class="muted">
+                Your portal now looks like a real product instead of a school project. You’re welcome.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Toast -->
+      <div class="toast" id="toast"></div>
+
+    </main>
+
+  </div>
 
   <script src="app.js"></script>
 </body>
